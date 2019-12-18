@@ -54,6 +54,18 @@ def fillGrid(grid):
       break
   grid[row][col]=0             
 
+def printGrid(grid):
+	for row in range(0,9):
+		if(row == 3 or row == 6):
+			print(" - - - - - - - - - - - -")
+		rowtext = ""
+		for column in range(0,9):
+			if(column == 3 or column == 6):
+				rowtext = rowtext + " | "
+			rowtext = rowtext + " " + str(int(grid[row][column]))
+		print(rowtext)
+	return
+
 #A function to check if the grid is full
 def checkGridFull(grid):
   for row in range(0,9):
