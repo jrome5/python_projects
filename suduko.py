@@ -6,13 +6,16 @@ def main():
 	print(values_list)
 	fillGrid(grid)
 	printGrid(grid)
+	removeNValues(grid, 40)
+	print("")
+	printGrid(grid)
 
 
 def fillGrid(grid):
     #Find next empty cell
-  for i in range(0,81):
-    row=i//9
-    col=i%9
+  for i in range(0,grid_size):
+    row=i//grid_length
+    col=i%grid_length
     if grid[row][col]==0:
       shuffle(values_list)      
       for value in values_list:
@@ -27,31 +30,38 @@ def fillGrid(grid):
       break
   grid[row][col]=0             
 
-def remove
+def removeNValues(grid, N):
+	for i in range(N):
+		cell_number = np.random.randint(0,grid_size)
+		row = cell_number//grid_length
+		column = cell_number%grid_length
+		grid[row][column] = 0
+	return
+
 
 def printGrid(grid):
-	for row in range(0,9):
+	for row in range(0,grid_length):
 		if(row == 3 or row == 6):
 			print(" - - - - - - - - - - - -")
 		rowtext = ""
-		for column in range(0,9):
+		for column in range(0,grid_length):
 			if(column == 3 or column == 6):
 				rowtext = rowtext + " | "
 			rowtext = rowtext + " " + str(int(grid[row][column]))
 		print(rowtext)
 	return
 
-#A function to check if the grid is full
 def checkGridFull(grid):
-  for row in range(0,9):
-      for col in range(0,9):
+  for row in range(0,grid_length):
+      for col in range(0,grid_length):
         if grid[row][col]==0:
           return False
-  #We have a complete grid!  
   return True 
 
-values_list = [1,2,3,4,5,6,7,8,9]
-grid = np.zeros((9,9))
+grid_length = 9
+grid_size = grid_length**2
+values_list = np.arange(1,grid_length+1)
+grid = np.zeros((grid_length, grid_length))
 
 def checkIfSafe(grid, row, column, value):
 	return (notUsedInRow(grid, row, value) and notUsedInColumn(grid, column, value) and notUsedInSquare(grid, row-row%3, column-column%3, value))
