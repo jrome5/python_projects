@@ -43,13 +43,26 @@ class Suduko:
 		output = ""
 		for row in range(0,self.length):
 			if(row == 3 or row == 6):
-				output = output + ("\n- - - - - - - - - - - -")
+				output = output + ("\n- - - - - - - - - - - - - - - - -")
 			rowtext = ""
 			for column in range(0,self.length):
 				if(column == 3 or column == 6):
 					rowtext = rowtext + " | "
 				rowtext = rowtext + " " + str(int(self.grid[row][column]))
 			output = output + "\n" + rowtext
+		return output
+
+	def printGridAsList(self):
+		output = []
+		for row in range(0,self.length):
+			if(row == 3 or row == 6):
+				output.append("- - - - - - - - - - - - - - - - -")
+			rowtext = ""
+			for column in range(0,self.length):
+				if(column == 3 or column == 6):
+					rowtext = rowtext + " | "
+				rowtext = rowtext + " " + str(int(self.grid[row][column]))
+			output.append(rowtext)
 		return output
 
 	def checkGridFull(self):
