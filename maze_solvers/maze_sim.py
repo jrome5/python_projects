@@ -1,8 +1,10 @@
 import pygame
 import time
 import random
+from graph import *
 
 def makeGrid(grid, size):
+  cell_id = 0
   for row in range(size):
     for col in range(size):
       x = (col * w)+ padding
@@ -14,33 +16,11 @@ def makeGrid(grid, size):
       pygame.draw.line(screen, dark_grey, [x + w, y + w], [x, y + w], thickness)   # bottom of cell
       pygame.draw.line(screen, dark_grey, [x, y + w], [x, y], thickness)           # left of cell
       grid.append((x,y))
+      cell = Vertex(cell_id)
+      cell.set_position(x, y)
+      graph.add_vertex(cell)
   pygame.display.update()
   return grid
-
-# def generateMaze(start_point = 10):
-   # starting positing of maze
-   # place starting cell into stack
-   # add starting cell to visited list
-   # loop until stack is empty
-     # slow program now a bit
-     # define cell list
-     # right cell available?
-      # if yes add to cell list
-     # left cell available?
-     # down cell available?
-     # up cell available?
-     # check to see if cell list is empty
-     # select one of the cell randomly
-     # if this cell has been chosen
-       # call push_right function
-       # solution = dictionary key = new cell, other = current c
-       # make this cell the current cell
-       # add to visited list
-       # place current cell on to stack
-     # if no cells are available pop one from the stack
-       # use single_cell function to show backtracking image
-       # slow program down a bit
-       # change colour to green to identify backtracking path
 
 def push_up(x, y):
     pygame.draw.rect(screen, blue, (x + 1, y - w + 1, w - thickness, (2*w)-thickness), 0)         # draw a rectangle twice the width of the cell
@@ -70,7 +50,9 @@ def generateMaze(start_point, size, animate=True):
     y = start_point
     single_cell(x, y)                                              # starting positing of maze
     stack.append((x,y))                                            # place starting cell into stack
+    cell_stack.append(0)
     visited.append((x,y))                                          # add starting cell to visited list
+    cell_id = 0
     while len(stack) > 0:                                          # loop until stack is empty
         time.sleep(delay)                                            # slow program now a bit
         cell = []                                                  # define cell list
@@ -90,39 +72,50 @@ def generateMaze(start_point, size, animate=True):
         if cell_below not in visited and cell_below in grid:      # up cell available?
             cell.append("up")
 
+        cell_chosen_id = 0
         if len(cell) > 0:                                          # check to see if cell list is empty
             cell_chosen = (random.choice(cell))                    # select one of the cell randomly
-
             if cell_chosen == "right":                             # if this cell has been chosen
+                cell_chosen_id = cell_id + 1
                 push_right(x, y)                                   # call push_right function
                 x = x + w                                          # make this cell the current cell
                 visited.append((x, y))                              # add to visited list
                 stack.append((x, y))                                # place current cell on to stack
 
             elif cell_chosen == "left":
+                cell_chosen_id = cell_id - 1
                 push_left(x, y)
                 x = x - w
                 visited.append((x, y))
                 stack.append((x, y))
 
             elif cell_chosen == "down":
+                cell_chosen_id = cell_id + size
                 push_down(x, y)
                 y = y + w
                 visited.append((x, y))
                 stack.append((x, y))
 
             elif cell_chosen == "up":
+                cell_chosen_id = cell_id - size
                 push_up(x, y)
                 y = y - w
                 visited.append((x, y))
                 stack.append((x, y))
+
+            graph.add_edge(cell_id, cell_chosen_id)
+            cell_id = cell_chosen_id
+            cell_stack.append(cell_chosen_id)
             if animate:    
               pygame.display.update()
         else:
             x, y = stack.pop()                                    # if no cells are available pop one from the stack
+            cell_id = cell_stack.pop()
             single_cell(x, y)                                     # use single_cell function to show backtracking image
             time.sleep(delay)                                       # slow program down a bit
             backtracking_cell(x, y)                               # change colour to green to identify backtracking path
+
+
 
 width = 500
 height = 500
@@ -139,14 +132,21 @@ pygame.display.set_caption("Maze Generator")
 
 grid = []
 stack = []
+cell_stack = []
 visited = []
 grid_size = 30
 FPS = 30
 padding = 10
 thickness = 1
 w = (width-(padding*2))/grid_size    
+graph = Graph()
 grid = makeGrid(grid, grid_size)
 generateMaze(padding, grid_size, False)
+for v in graph:
+        for w in v.get_connections():
+            vid = v.get_id()
+            wid = w.get_id()
+            print('( %s , %s, %3d)'  % ( vid, wid, v.get_weight(w)))
 pygame.display.update()
 
 running = True
