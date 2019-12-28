@@ -55,3 +55,10 @@ class Graph:
 
     def get_vertices(self):
         return self.vert_dict.keys()
+
+    def printAllConnections(self):
+        for v in self.vert_dict:
+            for w in v.get_connections():
+                vid = v.get_id()
+                wid = w.get_id()
+                print('( %s , %s, %3d)'  % ( vid, wid, v.get_weight(w)))
