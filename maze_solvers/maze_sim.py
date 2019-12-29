@@ -2,6 +2,7 @@ import pygame
 import time
 import random
 from graph import *
+from dijkstra import *
 
 def makeGrid(screen, size, padding, width, thickness):
   grid = []
@@ -100,6 +101,13 @@ def generateMaze(screen, grid, graph, start_point, size, width, thickness, anima
             time.sleep(delay)                                       # slow program down a bit
             pygame.draw.rect(screen, blue, (x +1, y +1, width-thickness-1, width-thickness-1), 0)        # used to re-colour the path after single_cell
 
+
+def printOpeningMessage():
+    opening_message = "Welcome"
+    controls_message = "Press \'M\' to generate a new maze, press \'D\' to solve this with Dijkstra algorithm and press \'Esc\' to quit"
+    print(opening_message + '\n' + controls_message)
+    return
+
 #GUI colors
 black = [0,0,0]
 grey = [150,150,150]
@@ -116,7 +124,7 @@ def main():
     font = pygame.font.SysFont(None, 48)
     pygame.display.set_caption("Maze Generator")
 
-    grid_size = 30
+    grid_size = 4
     FPS = 30
     padding = 10
     cell_thickness = 1
@@ -125,7 +133,7 @@ def main():
     grid, graph = makeGrid(screen, grid_size, padding, cell_width, cell_thickness)
     generateMaze(screen, grid, graph, padding, grid_size, cell_width, cell_thickness, False)
     pygame.display.update()
-
+    printOpeningMessage()
     running = True
     while running:
         clock.tick(FPS)
@@ -138,6 +146,8 @@ def main():
                 print("New maze coming right up!")
                 grid, graph = makeGrid(screen, grid_size, padding, cell_width, cell_thickness)
                 generateMaze(screen, grid, graph, padding, grid_size, cell_width, cell_thickness, True)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
+                dijkstra(graph, 0, grid_size**2-1) #get from start to end
         pygame.display.update()
     pygame.quit()
 

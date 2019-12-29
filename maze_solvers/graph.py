@@ -1,9 +1,15 @@
+
+import sys
+
 class Vertex:
     def __init__(self, node):
         self.x = 0
         self.y = 0
         self.id = node
         self.adjacent = {}
+        self.visited = False
+        self.distance = sys.maxint
+        self.previous = None
 
     def __str__(self):
         return str(self.id) + ' adjacent: ' + str([i.id for i in self.adjacent])
@@ -23,6 +29,21 @@ class Vertex:
 
     def get_weight(self, neighbor):
         return self.adjacent[neighbor]
+
+    def set_visited(self):
+        self.visited = True
+
+    def set_distance(self, dist):
+        self.distance = dist
+
+    def get_distance(self):
+        return self.distance
+
+    def set_previous(self, prev):
+        self.previous = prev
+
+    def get_previous(self):
+        return self.previous
 
 class Graph:
     def __init__(self):
