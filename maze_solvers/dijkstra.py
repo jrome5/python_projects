@@ -13,7 +13,22 @@ def shortest(v, path):
 
 import heapq
 
-def dijkstra(graph, start, target):
+def dijkstra(screen, graph, config):
+		#get config parameters
+		size = config.getGridSize()
+		width = config.getCellWidth()
+		padding = config.getPadding()
+		thickness = config.getCellThickness()
+		delay = config.getSimDelay()
+		x = config.getPadding()
+		y = config.getPadding()
+
+		# draw a single width cell 
+		pygame.draw.rect(screen, config.getRedColor(), (x +1, y +1, width-thickness-2, width-thickness-2), 0)
+		pygame.display.update()
+
+		start = 0
+		target = size**2 -1
 		start_vertex = graph.get_vertex(start)
 		target_vertex = graph.get_vertex(target)
 		print('''Dijkstra's shortest path''')
