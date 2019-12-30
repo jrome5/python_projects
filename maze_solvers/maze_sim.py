@@ -27,6 +27,7 @@ def makeGrid(screen, config):
       cell = Vertex(cell_id)
       cell.set_position(x, y)
       graph.add_vertex(cell)
+      cell_id = cell_id + 1
   pygame.display.update()
   return grid, graph
 

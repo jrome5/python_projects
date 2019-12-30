@@ -17,6 +17,9 @@ class Vertex:
     def set_position(self, pos_x, pos_y):
         self.x = pos_x
         self.y = pos_y
+
+    def get_position(self):
+        return self.x, self.y
         
     def add_neighbor(self, neighbor, weight=0):
         self.adjacent[neighbor] = weight
@@ -53,10 +56,9 @@ class Graph:
     def __iter__(self):
         return iter(self.vert_dict.values())
 
-    def add_vertex(self, node):
+    def add_vertex(self, new_vertex):
+        self.vert_dict[self.num_vertices] = new_vertex
         self.num_vertices = self.num_vertices + 1
-        new_vertex = Vertex(node)
-        self.vert_dict[node] = new_vertex
         return new_vertex
 
     def get_vertex(self, n):
