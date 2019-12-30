@@ -83,3 +83,20 @@ class Graph:
                 vid = v.get_id()
                 wid = w.get_id()
                 print('( %s , %s, %3d)'  % ( vid, wid, v.get_weight(w)))
+
+    def getMovementDirection(self, frm_id, to_id):
+        # if next ID is greater -> right or down, if next ID is smaller -> left or up
+        movement = ""
+        if(frm_id < to_id):
+            if(frm_id == to_id - 1):
+                movement =  "right"
+            else:
+                movement = "down"
+        else:
+            if(frm_id == to_id + 1):
+                movement = "left"
+            else:
+                movement = "up"
+        return movement
+
+

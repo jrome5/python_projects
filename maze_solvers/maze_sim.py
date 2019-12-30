@@ -39,10 +39,12 @@ def generateMaze(screen, grid, graph, config, animate=True):
     stack = []
     cell_stack = []
     visited = []
-    delay = config.getSimDelay()
+    delay = config.getSimDelay(animate)
     x = config.getPadding()
     y = config.getPadding()
-    pygame.draw.rect(screen, config.getRedColor(), (x +1, y +1, width-thickness-1, width-thickness-1), 0)          # draw a single width cell 
+    if animate:
+      config.drawSingleWidthCell(screen, x, y, config.getRedColor())
+      pygame.display.update()
     stack.append((x,y))                                            # place starting cell into stack
     cell_stack.append(0)
     visited.append((x,y))                                          # add starting cell to visited list
@@ -70,34 +72,21 @@ def generateMaze(screen, grid, graph, config, animate=True):
         if len(cell) > 0:                                          # check to see if cell list is empty
             cell_chosen = (random.choice(cell))                    # select one of the cell randomly
             if cell_chosen == "right":                             # if this cell has been chosen
-                pygame.draw.rect(screen, config.getBlueColor(), (x +1, y +1, (2*width)-thickness, width - thickness), 0)
                 cell_chosen_id = cell_id + 1
-                x = x + width                                          # make this cell the current cell
-                visited.append((x, y))                              # add to visited list
-                stack.append((x, y))                                # place current cell on to stack
 
             elif cell_chosen == "left":
-                pygame.draw.rect(screen, config.getBlueColor(), (x - width +1, y +1, (2*width)-thickness, width - thickness), 0)
                 cell_chosen_id = cell_id - 1
-                x = x - width
-                visited.append((x, y))
-                stack.append((x, y))
 
             elif cell_chosen == "down":
-                pygame.draw.rect(screen, config.getBlueColor(), (x +  1, y + 1, width-thickness, (2*width)-thickness), 0)
                 cell_chosen_id = cell_id + size
-                y = y + width
-                visited.append((x, y))
-                stack.append((x, y))
 
             elif cell_chosen == "up":
-                # draw a rectangle twice the width of the cell
-                pygame.draw.rect(screen, config.getBlueColor(), (x + 1, y - width + 1, width - thickness, (2*width)-thickness), 0)         
                 cell_chosen_id = cell_id - size
-                y = y - width
-                visited.append((x, y))
-                stack.append((x, y))
 
+            config.moveMarker(screen, x, y, cell_chosen, config.getBlueColor())         
+            x, y = config.moveCoords(x,y, cell_chosen)          # make this cell the current cell
+            visited.append((x, y))                              # add to visited list
+            stack.append((x, y))                                # place current cell on to stack
             graph.add_edge(cell_id, cell_chosen_id, 1)
             cell_id = cell_chosen_id
             cell_stack.append(cell_chosen_id)
@@ -107,9 +96,12 @@ def generateMaze(screen, grid, graph, config, animate=True):
             x, y = stack.pop()                                    # if no cells are available pop one from the stack
             cell_id = cell_stack.pop()
             pygame.draw.rect(screen, config.getRedColor(), (x +1, y +1, width-thickness-1, width-thickness-1), 0)          # draw a single width cell 
+            if animate:    
+              pygame.display.update()
             time.sleep(delay)                                       # slow program down a bit
             pygame.draw.rect(screen, config.getBlueColor(), (x +1, y +1, width-thickness-1, width-thickness-1), 0)        # used to re-colour the path after single_cell
-
+            if animate:    
+              pygame.display.update()
 
 def printOpeningMessage():
     opening_message = "Welcome"
@@ -143,6 +135,7 @@ def main():
                 generateMaze(screen, grid, graph, sim_config, True)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
                 dijkstra(screen, graph, sim_config) #get from start to end
+                time.sleep(1)
         pygame.display.update()
     pygame.quit()
 
