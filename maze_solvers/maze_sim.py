@@ -31,6 +31,14 @@ def makeGrid(screen, config):
   pygame.display.update()
   return grid, graph
 
+def generateGridGraph(graph, size):
+  for cell_id in range(size**2):
+    #connect adjacent cells: below and right
+    if((cell_id + size) <= (size**2)-1):
+      graph.add_edge(cell_id, cell_id+size, 1)
+    if(cell_id % size != (size-1)):
+      graph.add_edge(cell_id, cell_id+1, 1)
+  
 
 def generateMaze(screen, grid, graph, config, animate=True):
     size = config.getGridSize()
@@ -119,10 +127,13 @@ def main():
     pygame.display.set_caption("Maze Generator")
 
     grid, graph = makeGrid(screen, sim_config)
-    generateMaze(screen, grid, graph, sim_config, False)
+    generateGridGraph(graph, sim_config.getGridSize())
+    # generateMaze(screen, grid, graph, sim_config, False)
     pygame.display.update()
     printOpeningMessage()
     running = True
+    for v in graph:
+      print(v)
     while running:
         clock.tick(sim_config.getFPS())
         for event in pygame.event.get():
@@ -137,6 +148,8 @@ def main():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
                 dijkstra(screen, graph, sim_config) #get from start to end
                 time.sleep(1)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
+              graph.printAllConnections()
         pygame.display.update()
     pygame.quit()
 

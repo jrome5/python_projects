@@ -31,13 +31,13 @@ def dijkstra(screen, graph, config):
 		config.drawSingleWidthCell(screen, x, y, config.getRedColor())
 		target_x = padding + (size-1)*(width) + (width)/2
 		target_y = target_x
-		pygame.draw.circle(screen, config.getRedColor(), (target_x, target_y), (width-thickness*4)/2, 0) 
+		pygame.draw.circle(screen, config.getRedColor(), (target_x, target_y), (width)/4, 0) 
 		pygame.display.update()
 
 		print('''Dijkstra's shortest path''')
 		# Set the distance for the start node to zero 
 		for v in graph:
-			v.set_distance(sys.maxint) #infitiy
+			v.set_distance(sys.maxint) #infinity
 			v.set_previous(None)
 		start_vertex.set_distance(0)
 		# Put tuple pair into the priority queue
