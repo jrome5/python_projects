@@ -10,6 +10,8 @@ class Vertex:
         self.visited = False
         self.distance = sys.maxint
         self.previous = None
+        self.highlighted = False
+        self.obstacle = False
 
     def __str__(self):
         return str(self.id) + ' adjacent: ' + str([i.id for i in self.adjacent])
@@ -33,6 +35,9 @@ class Vertex:
     def get_weight(self, neighbor):
         return self.adjacent[neighbor]
 
+    def set_weight(self, neighbor, weight):
+        self.adjacent[neighbor] = weight
+
     def set_visited(self):
         self.visited = True
 
@@ -47,6 +52,19 @@ class Vertex:
 
     def get_previous(self):
         return self.previous
+
+    def set_highlighted(self, state):
+        self.highlighted = state
+
+    def get_highlighted(self):
+        return self.highlighted
+
+    def set_obstacle(self):
+        self.obstacle = True
+        for next in self.adjacent:
+          #set weights to infinite for all connections to this cell
+          #making this cell unreachable
+          self.set_weight(next, sys.maxint)
 
 class Graph:
     def __init__(self):
@@ -68,13 +86,11 @@ class Graph:
             return None
 
     def add_edge(self, frm, to, cost = 0):
-        if frm not in self.vert_dict:
-            self.add_vertex(frm)
-        if to not in self.vert_dict:
-            self.add_vertex(to)
-
-        self.vert_dict[frm].add_neighbor(self.vert_dict[to], cost)
-        self.vert_dict[to].add_neighbor(self.vert_dict[frm], cost)
+        try:
+            self.vert_dict[frm].add_neighbor(self.vert_dict[to], cost)
+            self.vert_dict[to].add_neighbor(self.vert_dict[frm], cost)
+        except:
+            print("Attempted to add edge frm: %s to: %s" %(frm, to))
 
     def get_vertices(self):
         return self.vert_dict.keys()
