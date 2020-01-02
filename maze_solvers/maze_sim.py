@@ -121,7 +121,7 @@ def printOpeningMessage():
     print(opening_message + '\n' + controls_message)
     return
 
-def highlightCell(screen, mouse_pos, graph, config):
+def highlightCell(screen, mouse_pos, graph, config, color = [255,255,255], alpha=128):
     pos_x, pos_y = mouse_pos
     padding = config.getPadding()
     screen_width = config.getWidth()
@@ -141,9 +141,10 @@ def highlightCell(screen, mouse_pos, graph, config):
       if(not v.get_highlighted()):
         v.set_highlighted(True)
         s = pygame.Surface((width,width))  # the size of your rect
-        s.set_alpha(128)                # alpha level
-        s.fill((255,255,255))           # this fills the entire surface
+        s.set_alpha(alpha)                # alpha level
+        s.fill(color)           # this fills the entire surface
         screen.blit(s, (v.x,v.y))    # (0,0) are the top-left coordinate
+        v.set_obstacle() 
     except:
       return
 
@@ -161,7 +162,7 @@ def main():
     pygame.display.update()
     printOpeningMessage()
     running = True
-
+    draging = False
     while running:
         clock.tick(sim_config.getFPS())
         for event in pygame.event.get():
@@ -180,7 +181,12 @@ def main():
                 grid, graph = makeGrid(screen, sim_config)
                 generateGridGraph(graph, sim_config.getGridSize())
             if event.type == pygame.MOUSEMOTION and pygame.mouse.get_focused():
-                highlightCell(screen, pygame.mouse.get_pos(), graph, sim_config)
+                if(draging):
+                  highlightCell(screen, pygame.mouse.get_pos(), graph, sim_config, sim_config.getBlackColor(), 200)
+            if event.type == pygame.MOUSEBUTTONUP:
+                draging = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                draging = True
         pygame.display.update()
     pygame.quit()
 

@@ -3,7 +3,7 @@ import time
 import random
 from graph import *
 import heapq
-
+import sys
 def shortest(v, path):
 		''' make shortest path from v.previous'''
 		if v.previous:
@@ -50,26 +50,46 @@ def dijkstra(screen, graph, config):
 				uv = heapq.heappop(unvisited_queue)
 				current = uv[1]
 				current.set_visited()
-				x, y = current.get_position()
-				time.sleep(delay)
-				config.drawSingleWidthCell(screen, x, y, config.getRedColor())
-				pygame.display.update()
-				time.sleep(delay)
+				if(not current.obstacle):
+					x, y = current.get_position()
+					config.drawSingleWidthCell(screen, x, y, config.getRedColor())
+					pygame.display.update()
+					time.sleep(delay)
 
-				#for next in v.adjacent:
-				for next in current.adjacent:
-						movement = graph.getMovementDirection(current.get_id(), next.get_id())
-						config.moveMarker(screen, x, y, movement, config.getGreenColor())
-						pygame.display.update()
-						# if visited, skip
-						if next.visited:
+					#for next in v.adjacent:
+					for next in current.adjacent:
+							# if visited, skip
+							if next.obstacle:
 								continue
-						new_dist = current.get_distance() + current.get_weight(next)
+							if next.visited:
+									continue
+							movement = graph.getMovementDirection(current.get_id(), next.get_id())
+							config.moveMarker(screen, x, y, movement, config.getGreenColor())
+							pygame.display.update()
+							new_dist = current.get_distance() + current.get_weight(next)
+							
+							if new_dist < next.get_distance():
+								next.set_distance(new_dist)
+								next.set_previous(current)
+								config.drawSingleWidthCell(screen, x, y, config.getRedColor())
+								pygame.display.update()
+								time.sleep(delay)
 						
-						if new_dist < next.get_distance():
-							next.set_distance(new_dist)
-							next.set_previous(current)
-							config.drawSingleWidthCell(screen, x, y, config.getRedColor())
+					if(current.get_id() == target):
+						found_target = True
+					# Rebuild heap
+					# 1. Pop every item
+					while len(unvisited_queue):
+							heapq.heappop(unvisited_queue)
+					# 2. Put all vertices not visited into the queue
+					unvisited_queue = [(v.get_distance(),v) for v in graph if not v.visited]
+					heapq.heapify(unvisited_queue)
+		path = [graph.get_vertex(target)]
+		shortest(graph.get_vertex(target), path)
+		print 'The shortest path : %s' %[v.get_id() for v in path[::-1]]
+		path = path[::-1]
+		drawPath(screen, path, graph, config)
+
 							pygame.display.update()
 							time.sleep(delay)
 					
@@ -87,6 +107,7 @@ def dijkstra(screen, graph, config):
 		print 'The shortest path : %s' %[v.get_id() for v in path[::-1]]
 		path = path[::-1]
 		drawPath(screen, path, graph, config)
+
 
 def drawPath(screen, path, graph, config):
 	delay = config.getSimDelay(True)

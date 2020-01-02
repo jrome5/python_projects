@@ -11,6 +11,7 @@ class Vertex:
         self.distance = sys.maxint
         self.previous = None
         self.highlighted = False
+        self.obstacle = False
 
     def __str__(self):
         return str(self.id) + ' adjacent: ' + str([i.id for i in self.adjacent])
@@ -34,6 +35,9 @@ class Vertex:
     def get_weight(self, neighbor):
         return self.adjacent[neighbor]
 
+    def set_weight(self, neighbor, weight):
+        self.adjacent[neighbor] = weight
+
     def set_visited(self):
         self.visited = True
 
@@ -54,6 +58,13 @@ class Vertex:
 
     def get_highlighted(self):
         return self.highlighted
+
+    def set_obstacle(self):
+        self.obstacle = True
+        for next in self.adjacent:
+          #set weights to infinite for all connections to this cell
+          #making this cell unreachable
+          self.set_weight(next, sys.maxint)
 
 class Graph:
     def __init__(self):
