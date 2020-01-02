@@ -114,9 +114,38 @@ def generateMaze(screen, grid, graph, config, animate=True):
 
 def printOpeningMessage():
     opening_message = "Welcome"
-    controls_message = "Press \'M\' to generate a new maze, press \'D\' to solve this with Dijkstra algorithm and press \'Esc\' to quit"
+    controls_message = "Press:"
+    controls_message = controls_message + "\n\'M\' to generate a new maze"
+    controls_message = controls_message + "\n\'D\' to solve with Dijkstra algorithm"
+    controls_message = controls_message + "\n press \'Esc\' to quit"
     print(opening_message + '\n' + controls_message)
     return
+
+def highlightCell(screen, mouse_pos, graph, config):
+    pos_x, pos_y = mouse_pos
+    padding = config.getPadding()
+    screen_width = config.getWidth()
+    screen_height = config.getHeight()
+
+    if((pos_x - padding) < 0 or (pos_y - padding) < 0):
+      return
+    if((pos_x - padding) >= screen_width or (pos_y - padding) >= screen_height):
+      return
+    grid_size = config.getGridSize()
+    width = config.getCellWidth()
+    col = (pos_x-padding) // width
+    row = (pos_y-padding) // width
+    cell_id = grid_size*row + col
+    v = graph.get_vertex(cell_id)
+    try:
+      if(not v.get_highlighted()):
+        v.set_highlighted(True)
+        s = pygame.Surface((width,width))  # the size of your rect
+        s.set_alpha(128)                # alpha level
+        s.fill((255,255,255))           # this fills the entire surface
+        screen.blit(s, (v.x,v.y))    # (0,0) are the top-left coordinate
+    except:
+      return
 
 def main():
     pygame.init()
@@ -132,8 +161,7 @@ def main():
     pygame.display.update()
     printOpeningMessage()
     running = True
-    for v in graph:
-      print(v)
+
     while running:
         clock.tick(sim_config.getFPS())
         for event in pygame.event.get():
@@ -149,7 +177,10 @@ def main():
                 dijkstra(screen, graph, sim_config) #get from start to end
                 time.sleep(1)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_g:
-              graph.printAllConnections()
+                grid, graph = makeGrid(screen, sim_config)
+                generateGridGraph(graph, sim_config.getGridSize())
+            if event.type == pygame.MOUSEMOTION and pygame.mouse.get_focused():
+                highlightCell(screen, pygame.mouse.get_pos(), graph, sim_config)
         pygame.display.update()
     pygame.quit()
 

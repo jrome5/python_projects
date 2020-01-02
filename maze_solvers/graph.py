@@ -10,6 +10,7 @@ class Vertex:
         self.visited = False
         self.distance = sys.maxint
         self.previous = None
+        self.highlighted = False
 
     def __str__(self):
         return str(self.id) + ' adjacent: ' + str([i.id for i in self.adjacent])
@@ -47,6 +48,12 @@ class Vertex:
 
     def get_previous(self):
         return self.previous
+
+    def set_highlighted(self, state):
+        self.highlighted = state
+
+    def get_highlighted(self):
+        return self.highlighted
 
 class Graph:
     def __init__(self):
